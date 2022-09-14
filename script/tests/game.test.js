@@ -9,9 +9,8 @@
 
 //mandatory
 
-const {
-    game
-} = require('../game');
+
+const { game, newGame} = require('../game');
 
 beforeAll(() => {
     //setting DOM mock always like this!
@@ -41,3 +40,26 @@ describe('game object contains correct keys', () => {
     })
 
 });
+
+describe('new game works correctly', () => {
+    beforeAll(() => {
+        game.score = 42;
+        game.playerMoves = ['button1', 'button2']
+        game.currentGame = ['button1', 'button2']
+        document.getElementById('score').innertext= '42'
+        newGame()
+    });
+    test('should set the game score to 0',()=>{
+        expect(game.score).toEqual(0);
+    });
+    test('should reset the player move array',()=>{
+        expect(game.playerMoves.length).toBe(0);
+    });
+    test('should reset the pc move array',()=>{
+        expect(game.currentGame.length).toBe(0);
+    });
+    test('should display 0 on the score element',()=>{
+        expect(document.getElementById('score').innertext).toBe(0);
+    });
+
+})
