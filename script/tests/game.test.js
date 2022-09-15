@@ -15,9 +15,13 @@ const {
     showScore,
     addTurn,
     lightsOn,
-    showTurns
+    showTurns,
+    playerTurn
 } = require('../game');
+// jest spy
 
+jest.spyOn(window, 'alert').mockImplementation(() =>{
+ })
 //setting DOM mock always like this!
 
 beforeAll(() => {
@@ -69,6 +73,15 @@ describe("newGame works correctly", () => {
     test("should add one move to the computer's game array", () => {
         expect(game.currentGame.length).toBe(1);
     });
+
+    test("expect data-listener to be true", () => {
+        const elements = document.getElementsByClassName('circle');
+        for (let element of elements) {
+            expect(element.getAttribute('data-listener')).toEqual('true')
+        }
+    });
+
+
 });
 
 describe("gamePlay works correctly", () => {
@@ -95,9 +108,29 @@ describe("gamePlay works correctly", () => {
         expect(button.classList).toContain('light');
     });
 
-    test('showsTurns should update game.turnNumber', () =>{
+    test('showsTurns should update game.turnNumber', () => {
         game.turnNumber = 42
-        showTurns()
+        showTurns();
         expect(game.turnNumber).toBe(0);
+    })
+
+    test('should increment the score if the turn is correct', () => {
+        game.playerMoves.push(game.currentGame[0]);
+        playerTurn();
+        expect(game.score).toEqual(1);
+    })
+    test('should alert if the move is wrong', () =>{
+        game.playerMoves.push('wrong');
+        expect(window.alert).toBeCalledWith('wrong move!')
+    })
+    test('should toggle turnInProgess to true', () =>{
+        showTurns();
+        expect(game.turnInProgress).toBe(true);
+    });
+    test('clicking during computer sequense should fail', () =>{
+        showTurns();
+        game.lastButton= '';
+        document.getElementById('button2').click();
+        expect(game.lastButton).toEqual('')
     })
 })

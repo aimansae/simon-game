@@ -3,13 +3,32 @@ let game = {
     playerMoves: [],
     score: 0,
     turnNumber:0,
-    choices: ["button1", "button2", "button3", "button4"]
+    choices: ["button1", "button2", "button3", "button4"], 
+    lastButton: '',
+    turnInProgress: false,
 };
 
 function newGame() {
     game.currentGame = [];
     game.playerMoves = [];
     game.score = 0;
+    for(let circle of document.getElementsByClassName('circle')){
+        if(circle.getAttribute('data-listener') !=='true'){
+            circle.addEventListener('click', (e) => {
+                // defensive mechanism to make sure there is a game in progress 
+                if(game.currentGame.length >0 && !game.turnInProgress){
+               
+                    let move = e.target.getAttribute('id');
+                game.lastButton = move;
+                lightsOn(move);
+                game.playerMoves.push(move);
+                playerTurn();
+                }
+
+            });
+            circle.setAttribute('data-listener','true')
+        }
+    }
     showScore();
     addTurn();
 }
@@ -32,17 +51,32 @@ function lightsOn(circ){
 }
 
 function showTurns() {
+    game.turnInProgress = true;
     game.turnNumber = 0;
     let turns = setInterval(() => {
         lightsOn(game.currentGame[game.turnNumber]);
         game.turnNumber++;
         if (game.turnNumber>= game.currentGame.length){
-            clearInterval(turns)
+            clearInterval(turns);
+            game.turnInProgress = false;
 
         }
     }, 800)
     }
 
+    function playerTurn() {
+        let i = game.playerMoves.length - 1;
+        if (game.currentGame[i] === game.playerMoves[i]) {
+            if (game.currentGame.length === game.playerMoves.length) {
+                game.score++;
+                showScore();
+                addTurn();
+            }
+        } else{
+            alert('wrong movw!');
+            newGame()
+        }
+    }
 
 
 //must export {if there are more that 1 object} check line 10 in test.js
@@ -52,5 +86,6 @@ module.exports = {
     showScore,
     addTurn,
     lightsOn,
-    showTurns
+    showTurns,
+    playerTurn
 };
